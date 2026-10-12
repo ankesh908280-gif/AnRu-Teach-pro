@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#121212">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AnRu Teach">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="AnRu Teach">
+  <meta name="description" content="Mobile-friendly Teaching Whiteboard & Slide Annotation Web App">
+
+  <title>AnRu Teach — Teaching Whiteboard & Slide Annotation</title>
+
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App Root Container -->
+  <div id="app" class="app-root">
+
+    <!-- Top Navigation & Slide Header (Floating Glassmorphism Bar) -->
+    <header class="top-nav glass-card" id="topNav">
+      <div class="nav-left">
+        <!-- App Logo & Branding -->
+        <div class="app-brand" title="AnRu Teach">
+          <img src="icon-192.png" onerror="this.onerror=null; this.src='icons/icon-192.png';" alt="AnRu Teach Logo" class="brand-logo-img">
+          <span class="app-title">AnRu <span class="neon-accent">Teach</span></span>
+        </div>
+
+        <!-- Slide Upload Button -->
+        <label for="slideUploadInput" class="btn btn-outline" title="Upload Canva/Image Slides (Multiple PNG/JPG)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span class="btn-text">Upload Slides</span>
+        </label>
+        <input type="file" id="slideUploadInput" accept="image/*" multiple hidden>
+
+        <!-- Add Blank Slide Button -->
+        <button id="addBlankSlideBtn" class="btn btn-icon" title="Add Blank Whiteboard Slide">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Slide Navigation Floating Pill -->
+      <div class="slide-nav-pill">
+        <button id="prevSlideBtn" class="btn btn-icon nav-btn" title="Previous Slide (Swipe / Key Left)" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+
+        <div class="slide-indicator" id="slideIndicator" title="Current Slide">
+          <span id="currentSlideNum">1</span>
+          <span class="divider">/</span>
+          <span id="totalSlidesNum">1</span>
+        </div>
+
+        <button id="nextSlideBtn" class="btn btn-icon nav-btn" title="Next Slide (Swipe / Key Right)" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Quick Actions (Install PWA, Undo, Redo, Export, Fullscreen) -->
+      <div class="nav-right">
+        <!-- Install App Button -->
+        <button id="installPwaBtn" class="btn btn-install" title="Install AnRu Teach on your Device">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span class="btn-text">Install App</span>
+        </button>
+
+        <button id="undoBtn" class="btn btn-icon" title="Undo Annotation" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7v6h6"/>
+            <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+          </svg>
+        </button>
+
+        <button id="redoBtn" class="btn btn-icon" title="Redo Annotation" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 7v6h-6"/>
+            <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/>
+          </svg>
+        </button>
+
+        <button id="exportSlideBtn" class="btn btn-icon" title="Export Annotated Slide as Image">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </button>
+
+        <!-- Fullscreen Mode Toggle -->
+        <button id="fullscreenBtn" class="btn btn-icon neon-btn" title="Toggle Fullscreen Teaching Mode">
+          <svg class="icon enter-fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+          <svg class="icon exit-fullscreen-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Canvas Viewport Area -->
+    <main class="canvas-viewport" id="canvasViewport">
+      <div class="canvas-wrapper" id="canvasWrapper">
+        <!-- Layer 1: Background Slide Canvas -->
+        <canvas id="bgCanvas" class="layer-canvas bg-layer"></canvas>
+
+        <!-- Layer 2: Interactive Drawing & Annotation Canvas -->
+        <canvas id="drawCanvas" class="layer-canvas draw-layer"></canvas>
+
+        <!-- Initial Welcome / Dropzone Overlay -->
+        <div id="dropzonePrompt" class="dropzone-overlay">
+          <div class="dropzone-box glass-card">
+            <div class="dropzone-logo-wrapper">
+              <img src="icon-192.png" onerror="this.onerror=null; this.src='icons/icon-192.png';" alt="AnRu Teach Logo" class="dropzone-logo">
+            </div>
+            <h2>AnRu Teach Whiteboard</h2>
+            <p>Ready for teaching. Draw directly or upload slides exported from Canva.</p>
+            <div class="dropzone-actions">
+              <button id="quickUploadBtn" class="btn btn-primary">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Select Slides (PNG / JPG)
+              </button>
+              <button id="startBlankBtn" class="btn btn-outline">Use Blank Whiteboard</button>
+              <button id="quickInstallBtn" class="btn btn-install">📲 Install App</button>
+            </div>
+            <span class="dropzone-hint">Landscape orientation & stylus / finger touch optimized</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating / Dockable Teacher's Toolbar -->
+    <aside class="teacher-toolbar glass-card dock-bottom" id="teacherToolbar">
+      <!-- Toolbar Drag / Collapse Handle -->
+      <button class="toolbar-drag-handle" id="toolbarToggleBtn" title="Collapse / Expand Toolbar">
+        <span class="handle-bar"></span>
+      </button>
+
+      <!-- Tool Modes Section: Pen, Highlighter, Eraser -->
+      <div class="toolbar-section tool-modes">
+        <button id="penToolBtn" class="tool-btn active" data-tool="pen" title="Pen Tool">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18"/>
+            <path d="M2 2l7.586 7.586"/>
+            <circle cx="11" cy="11" r="2"/>
+          </svg>
+          <span class="tool-label">Pen</span>
+        </button>
+
+        <button id="highlighterToolBtn" class="tool-btn" data-tool="highlighter" title="Highlighter (Translucent Yellow)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 11-6 6v3h3l6-6"/>
+            <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
+          </svg>
+          <span class="tool-label">Highlight</span>
+        </button>
+
+        <button id="eraserToolBtn" class="tool-btn" data-tool="eraser" title="Eraser Tool (Leaves Slide Background Intact)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+            <path d="M22 21H7"/>
+            <path d="m5 11 9 9"/>
+          </svg>
+          <span class="tool-label">Eraser</span>
+        </button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Color Palette (4 Distinct Colors: Red, Blue, Green, Translucent Yellow) -->
+      <div class="toolbar-section color-palette" id="colorPalette">
+        <!-- 1. Neon Red -->
+        <button class="color-btn" data-color="#ff334b" title="Red Color" style="--btn-color: #ff334b;">
+          <span class="color-swatch"></span>
+        </button>
+
+        <!-- 2. Neon Blue (Active default) -->
+        <button class="color-btn active" data-color="#00e5ff" title="Blue Color" style="--btn-color: #00e5ff;">
+          <span class="color-swatch"></span>
+        </button>
+
+        <!-- 3. Neon Green -->
+        <button class="color-btn" data-color="#00e676" title="Green Color" style="--btn-color: #00e676;">
+          <span class="color-swatch"></span>
+        </button>
+
+        <!-- 4. Translucent Yellow (Highlighter) -->
+        <button class="color-btn" data-color="rgba(255, 235, 59, 0.45)" title="Translucent Yellow (Highlighter)" style="--btn-color: rgba(255, 235, 59, 0.85);">
+          <span class="color-swatch highlight-swatch"></span>
+        </button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Stroke Thickness / Pen Size Controls -->
+      <div class="toolbar-section size-controls">
+        <div class="size-presets">
+          <button class="size-preset-btn active" data-size="4" title="Thin (4px)">
+            <span class="dot dot-sm"></span>
+          </button>
+          <button class="size-preset-btn" data-size="8" title="Medium (8px)">
+            <span class="dot dot-md"></span>
+          </button>
+          <button class="size-preset-btn" data-size="16" title="Thick (16px)">
+            <span class="dot dot-lg"></span>
+          </button>
+          <button class="size-preset-btn" data-size="32" title="Extra Thick (32px)">
+            <span class="dot dot-xl"></span>
+          </button>
+        </div>
+
+        <!-- Thickness Slider & Dynamic Preview -->
+        <div class="slider-wrapper">
+          <input type="range" id="sizeSlider" min="2" max="48" value="6" step="1" title="Adjust Stroke Thickness">
+          <span class="size-badge" id="sizeBadge">6px</span>
+        </div>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Clear Board & Dock Position Controls -->
+      <div class="toolbar-section board-actions">
+        <button id="clearBoardBtn" class="action-btn danger-btn" title="Clear All Annotations On Current Slide">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          <span class="tool-label">Clear</span>
+        </button>
+
+        <!-- Dock Position Switcher: Bottom / Left Dock -->
+        <button id="dockPositionBtn" class="action-btn" title="Switch Dock Position (Bottom / Left)">
+          <svg class="icon dock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="3" y1="15" x2="21" y2="15"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile Landscape Orientation Reminder Banner -->
+    <div id="landscapeBanner" class="landscape-notice hidden">
+      <div class="notice-card glass-card">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2">
+          <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12" y2="18.01"/>
+        </svg>
+        <span>Rotate to <strong>Landscape</strong> for optimal whiteboard teaching</span>
+        <button id="dismissBannerBtn" class="dismiss-btn">&times;</button>
+      </div>
+    </div>
+
+    <!-- Clear Board Confirmation Modal -->
+    <div id="clearModal" class="modal-overlay hidden">
+      <div class="modal-box glass-card">
+        <h3>Clear Current Slide?</h3>
+        <p>This will remove all drawings and annotations on this slide. Your background slide image will remain untouched.</p>
+        <div class="modal-buttons">
+          <button id="cancelClearBtn" class="btn btn-outline">Cancel</button>
+          <button id="confirmClearBtn" class="btn btn-danger">Clear Slide</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
