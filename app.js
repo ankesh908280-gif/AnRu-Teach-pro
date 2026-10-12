@@ -792,9 +792,7 @@ function setupPWAInstallation() {
       if (installBtn) installBtn.classList.add('hidden');
       if (quickInstallBtn) quickInstallBtn.classList.add('hidden');
     } else {
-      alert('To install AnRu Teach on your phone:
-1. Tap the Chrome menu (⋮) in the top-right corner.
-2. Tap "Install app" (या "Add to Home screen").');
+      alert("To install AnRu Teach, tap the Chrome menu (⋮) and choose Install app.");
     }
   };
 
